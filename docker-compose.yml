@@ -1,0 +1,102 @@
+services:
+  # Warehouse DB (veri tabloları burada)
+  postgres_warehouse:
+    image: postgres:15
+    container_name: teias_postgres_warehouse
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pg_warehouse_data:/var/lib/postgresql/data
+
+  # Airflow Metadata DB 
+
+  postgres_airflow:
+    image: postgres:15
+    container_name: teias_postgres_airflow
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${AIRFLOW_DB_USER}
+      POSTGRES_PASSWORD: ${AIRFLOW_DB_PASSWORD}
+      POSTGRES_DB: ${AIRFLOW_DB_NAME}
+    ports:
+      - "${AIRFLOW_DB_PORT}:5432"
+    volumes:
+      - pg_airflow_data:/var/lib/postgresql/data
+
+  # MLflow Tracking Server
+  
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/mlflow/Dockerfile
+    container_name: teias_mlflow
+    restart: unless-stopped
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_warehouse:5432/${POSTGRES_DB}
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: /mlruns
+    ports:
+      - "${MLFLOW_PORT}:5000"
+    volumes:
+      - mlflow_artifacts:/mlruns
+    depends_on:
+      - postgres_warehouse
+
+    
+  # Airflow (Webserver + Scheduler)
+ 
+  airflow:
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+    container_name: teias_airflow
+    restart: unless-stopped
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@postgres_airflow:5432/${AIRFLOW_DB_NAME}
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      WAREHOUSE_DB_URI: ${WAREHOUSE_DB_URI}
+
+      AIRFLOW_ADMIN_USER: ${AIRFLOW_ADMIN_USER}
+      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+    ports:
+      - "${AIRFLOW_PORT}:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./data:/opt/airflow/data
+      - ./src:/opt/airflow/src
+      - ./configs:/opt/airflow/configs
+    depends_on:
+      - postgres_airflow
+      - postgres_warehouse
+      - mlflow
+    command: |
+      bash -lc '
+        set -e
+        airflow db migrate
+
+        airflow users create \
+          --username "${AIRFLOW_ADMIN_USER:-admin}" \
+          --password "${AIRFLOW_ADMIN_PASSWORD:-admin}" \
+          --firstname "Admin" \
+          --lastname "User" \
+          --role "Admin" \
+          --email "admin@example.com" || true
+
+        airflow webserver &
+        exec airflow scheduler
+      '
+volumes:
+  pg_warehouse_data:
+  pg_airflow_data:
+  mlflow_artifacts:

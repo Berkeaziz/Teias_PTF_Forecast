@@ -1,0 +1,30 @@
+# Core
+pandas
+numpy
+requests
+python-dotenv
+
+# Data formats
+pyarrow
+openpyxl
+
+# Machine Learning
+scikit-learn
+lightgbm
+statsmodels
+
+# Experiment tracking
+mlflow
+
+# Notebook
+jupyter
+notebook
+ipykernel
+
+# Visualization
+matplotlib
+seaborn
+
+# Database
+psycopg2-binary
+sqlalchemy
