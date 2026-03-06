@@ -56,7 +56,6 @@ def daterange_chunks(start_date: str, end_date: str, chunk_days: int):
         cur = chunk_end + timedelta(days=1)
 
 def _find_first_list(obj):
-    """EPİAŞ response içindeki ilk 'liste'yi bul (genelde items/list)."""
     if isinstance(obj, list):
         return obj
     if isinstance(obj, dict):
@@ -67,10 +66,6 @@ def _find_first_list(obj):
     return None
 
 def raw_to_df(raw: dict, chunk_start: str, chunk_end: str) -> pd.DataFrame:
-    """
-    EPİAŞ JSON -> DataFrame.
-    Response içinden kayıt listesini bulur, json_normalize ile tablo yapar.
-    """
     rows = _find_first_list(raw)
     if not isinstance(rows, list) or len(rows) == 0:
         return pd.DataFrame()
@@ -92,10 +87,6 @@ def raw_to_df(raw: dict, chunk_start: str, chunk_end: str) -> pd.DataFrame:
     return df
 
 def write_parquet_partitioned(df: pd.DataFrame, out_dir: str):
-    """
-    DataFrame'i partitionlı parquet dataset olarak yazar.
-    Partition kolonları: year, month (DF içinde oluşturulur)
-    """
     if df.empty:
         return 0
 
