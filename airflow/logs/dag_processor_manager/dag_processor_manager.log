@@ -2212,3 +2212,104 @@ File Path                                    PID    Runtime      # DAGs    # Err
 /opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.17s           2026-03-12T16:53:31
 /opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.16s           2026-03-12T16:53:31
 ================================================================================
+[2026-03-12T16:54:30.750+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.18s           2026-03-12T16:54:01
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.16s           2026-03-12T16:54:01
+================================================================================
+[2026-03-12T16:54:57.065+0000] {manager.py:737} INFO - Searching for files in /opt/airflow/dags
+[2026-03-12T16:54:57.088+0000] {manager.py:740} INFO - There are 2 files in /opt/airflow/dags
+[2026-03-12T16:55:01.122+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.16s           2026-03-12T16:54:31
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.16s           2026-03-12T16:54:31
+================================================================================
+[2026-03-12T16:55:31.485+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.17s           2026-03-12T16:55:02
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.15s           2026-03-12T16:55:02
+================================================================================
+[2026-03-12T16:56:02.150+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.16s           2026-03-12T16:55:32
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.16s           2026-03-12T16:55:32
+================================================================================
+[2026-03-12T16:56:32.425+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.20s           2026-03-12T16:56:03
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.19s           2026-03-12T16:56:03
+================================================================================
+[2026-03-12T16:57:02.793+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.19s           2026-03-12T16:56:33
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.19s           2026-03-12T16:56:33
+================================================================================
+[2026-03-12T16:57:33.303+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.15s           2026-03-12T16:57:03
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.14s           2026-03-12T16:57:03
+================================================================================
+[2026-03-12T16:58:04.195+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.73s           2026-03-12T16:57:35
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.69s           2026-03-12T16:57:35
+================================================================================
+[2026-03-12T16:58:34.886+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.31s           2026-03-12T16:58:05
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.30s           2026-03-12T16:58:05
+================================================================================
+[2026-03-12T16:59:05.243+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.15s           2026-03-12T16:58:36
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.15s           2026-03-12T16:58:36
+================================================================================
+[2026-03-12T16:59:35.820+0000] {manager.py:878} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                    PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/inference_ptf_pipeline.py                           1           0  0.23s           2026-03-12T16:59:06
+/opt/airflow/dags/retrain_ptf_pipeline.py                             1           0  0.19s           2026-03-12T16:59:06
+================================================================================
