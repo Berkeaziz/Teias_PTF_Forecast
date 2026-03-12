@@ -56,6 +56,19 @@ I --> J
 F --> K
 K --> L
 
+
+%% Styles
+classDef api fill:#ffcccb,stroke:#333,stroke-width:2px
+classDef data fill:#d4f1f9,stroke:#333,stroke-width:2px
+classDef process fill:#e6ffe6,stroke:#333,stroke-width:2px
+classDef model fill:#fff3cd,stroke:#333,stroke-width:2px
+classDef inference fill:#e6ccff,stroke:#333,stroke-width:2px
+
+class A api
+class C,E data
+class B,D,F process
+class H,I,J model
+class G,K,L inference
 ```
 ## 📥 Data Ingestion
 
@@ -302,10 +315,28 @@ Two workflows were implemented:
 
 ```mermaid
 flowchart LR
-    fetch_epias[fetch_epias] --> process_epias[process_epias]
-    process_epias --> build_features[build_features<br/>train mode]
-    build_features --> train_lgbm[train_lgbm]
-    train_lgbm --> evaluate[evaluate]
+    fetch_epias[fetch_epias]
+    process_epias[process_epias]
+    build_features[build_features<br/>train mode]
+    train_lgbm[train_lgbm]
+    evaluate[evaluate]
+
+    fetch_epias --> process_epias
+    process_epias --> build_features
+    build_features --> train_lgbm
+    train_lgbm --> evaluate
+
+%% Styles
+classDef ingestion fill:#cce5ff,stroke:#333,stroke-width:2px
+classDef processing fill:#d5f5e3,stroke:#333,stroke-width:2px
+classDef training fill:#fff3cd,stroke:#333,stroke-width:2px
+classDef evaluation fill:#ffd6cc,stroke:#333,stroke-width:2px
+
+class fetch_epias ingestion
+class process_epias processing
+class build_features processing
+class train_lgbm training
+class evaluate evaluation
 ```
 This workflow periodically retrains the forecasting model using newly available data.
 
@@ -313,9 +344,24 @@ This workflow periodically retrains the forecasting model using newly available 
 
 ```mermaid
 flowchart LR
-    fetch_epias[fetch_epias] --> process_epias[process_epias]
-    process_epias --> build_features[build_features<br/>inference mode]
-    build_features --> predict[predict]
+    fetch_epias[fetch_epias]
+    process_epias[process_epias]
+    build_features[build_features<br/>inference mode]
+    predict[predict]
+
+    fetch_epias --> process_epias
+    process_epias --> build_features
+    build_features --> predict
+
+%% Styles
+classDef ingestion fill:#cce5ff,stroke:#333,stroke-width:2px
+classDef processing fill:#d5f5e3,stroke:#333,stroke-width:2px
+classDef inference fill:#e6ccff,stroke:#333,stroke-width:2px
+
+class fetch_epias ingestion
+class process_epias processing
+class build_features processing
+class predict inference
 ```
 
 This workflow generates new price predictions using the latest data.
