@@ -1,0 +1,23 @@
+artifact_path: file:C:/Users/berke/Desktop/teias-price-forecast/mlruns/1/models/m-7c450b982f5848f2a9f49e86c792ea11/artifacts
+flavors:
+  lightgbm:
+    code: null
+    data: model.pkl
+    lgb_version: 4.6.0
+    model_class: lightgbm.sklearn.LGBMRegressor
+    serialization_format: cloudpickle
+    skops_trusted_types: null
+  python_function:
+    data: model.pkl
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.lightgbm
+    python_version: 3.13.1
+mlflow_version: 3.10.1
+model_id: m-7c450b982f5848f2a9f49e86c792ea11
+model_size_bytes: 2096761
+model_uuid: m-7c450b982f5848f2a9f49e86c792ea11
+prompts: null
+run_id: 67e0116af1e24ea394718d7e01488cff
+utc_time_created: '2026-03-12 14:48:10.713203'
