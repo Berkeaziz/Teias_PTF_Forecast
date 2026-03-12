@@ -56,10 +56,7 @@ I --> J
 F --> K
 K --> L
 
-
-Each component can run independently or be orchestrated through Airflow DAGs.
 ```
-
 ## 📥 Data Ingestion
 
 Electricity price data is collected from the **EPİAŞ Transparency Platform API**.
