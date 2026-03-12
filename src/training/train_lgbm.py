@@ -5,6 +5,8 @@ from pathlib import Path
 import json
 
 import joblib
+import mlflow
+import mlflow.lightgbm
 import numpy as np
 import pandas as pd
 from lightgbm import LGBMRegressor
@@ -89,13 +91,14 @@ def evaluate_forecast(
         "MAPE": float(mape),
     }
 
+
 def train_model(
     X_train: pd.DataFrame,
-    y_train:pd.Series,
-    X_val:pd.DataFrame,
+    y_train: pd.Series,
+    X_val: pd.DataFrame,
     y_val: pd.Series,
-)-> LGBMRegressor:
-    model =LGBMRegressor(
+) -> LGBMRegressor:
+    model = LGBMRegressor(
         n_estimators=800,
         learning_rate=0.02,
         max_depth=6,
@@ -109,11 +112,12 @@ def train_model(
     model.fit(
         X_train,
         y_train,
-        eval_set=[(X_val,y_val)],
-        eval_metric="l1"
+        eval_set=[(X_val, y_val)],
+        eval_metric="l1",
     )
 
     return model
+
 
 def save_model(model: LGBMRegressor, output_path: str | Path) -> Path:
     output_path = Path(output_path)
@@ -121,6 +125,7 @@ def save_model(model: LGBMRegressor, output_path: str | Path) -> Path:
 
     joblib.dump(model, output_path)
     return output_path
+
 
 def save_metrics(metrics: dict, output_path: str | Path) -> Path:
     output_path = Path(output_path)
@@ -130,6 +135,7 @@ def save_metrics(metrics: dict, output_path: str | Path) -> Path:
         json.dump(metrics, f, ensure_ascii=False, indent=2)
 
     return output_path
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train LightGBM model for PTF forecasting.")
@@ -145,62 +151,100 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default="models/lgbm_model.pkl",
     )
-
     parser.add_argument(
         "--metrics-output",
         type=str,
         default="artifacts/training/train_metrics.json",
     )
+    parser.add_argument(
+        "--experiment-name",
+        type=str,
+        default="ptf_forecasting_lgbm",
+        help="MLflow experiment name.",
+    )
 
     return parser.parse_args()
+
 
 def main() -> None:
     args = parse_args()
 
-    print(f"Loading data from: {args.input}")
-    df = load_data(args.input)
-    print(f"Dataset shape: {df.shape}")
+    mlflow.set_experiment(args.experiment_name)
 
-    train_df, val_df, test_df = split_data(df)
+    with mlflow.start_run():
+        print(f"Loading data from: {args.input}")
+        df = load_data(args.input)
+        print(f"Dataset shape: {df.shape}")
 
-    print(f"Train shape: {train_df.shape}")
-    print(f"Val shape  : {val_df.shape}")
-    print(f"Test shape : {test_df.shape}")
+        train_df, val_df, test_df = split_data(df)
 
-    X_train, y_train = make_xy(train_df)
-    X_val, y_val = make_xy(val_df)
-    X_test, y_test = make_xy(test_df)
+        print(f"Train shape: {train_df.shape}")
+        print(f"Val shape  : {val_df.shape}")
+        print(f"Test shape : {test_df.shape}")
 
-    print("Training LightGBM model...")
-    model = train_model(X_train, y_train, X_val, y_val)
+        X_train, y_train = make_xy(train_df)
+        X_val, y_val = make_xy(val_df)
+        X_test, y_test = make_xy(test_df)
 
-    print("Evaluating on validation set...")
-    val_pred = model.predict(X_val)
-    val_metrics = evaluate_forecast(y_val, val_pred)
+        params = {
+            "n_estimators": 800,
+            "learning_rate": 0.02,
+            "max_depth": 6,
+            "num_leaves": 31,
+            "min_child_samples": 50,
+            "subsample": 1,
+            "colsample_bytree": 0.8,
+            "random_state": 42,
+            "train_ratio": 0.70,
+            "val_ratio": 0.15,
+            "target_col": "target",
+        }
 
-    print("Evaluating on test set...")
-    test_pred = model.predict(X_test)
-    test_metrics = evaluate_forecast(y_test, test_pred)
+        mlflow.log_params(params)
+        mlflow.log_param("n_rows", len(df))
+        mlflow.log_param("n_features", X_train.shape[1])
 
-    all_metrics = {
-        "validation": val_metrics,
-        "test": test_metrics,
-    }
+        print("Training LightGBM model...")
+        model = train_model(X_train, y_train, X_val, y_val)
 
-    print("\nValidation Metrics")
-    for k, v in val_metrics.items():
-        print(f"{k}: {v:.4f}")
+        print("Evaluating on validation set...")
+        val_pred = model.predict(X_val)
+        val_metrics = evaluate_forecast(y_val, val_pred)
 
-    print("\nTest Metrics")
-    for k, v in test_metrics.items():
-        print(f"{k}: {v:.4f}")
+        print("Evaluating on test set...")
+        test_pred = model.predict(X_test)
+        test_metrics = evaluate_forecast(y_test, test_pred)
 
-    model_path = save_model(model, args.model_output)
-    metrics_path = save_metrics(all_metrics, args.metrics_output)
+        all_metrics = {
+            "validation": val_metrics,
+            "test": test_metrics,
+        }
 
-    print(f"\nModel saved to   : {model_path}")
-    print(f"Metrics saved to : {metrics_path}")
-    print("Training completed successfully.")
+        print("\nValidation Metrics")
+        for k, v in val_metrics.items():
+            print(f"{k}: {v:.4f}")
+
+        print("\nTest Metrics")
+        for k, v in test_metrics.items():
+            print(f"{k}: {v:.4f}")
+
+        mlflow.log_metric("val_mae", val_metrics["MAE"])
+        mlflow.log_metric("val_rmse", val_metrics["RMSE"])
+        mlflow.log_metric("val_mape", val_metrics["MAPE"])
+
+        mlflow.log_metric("test_mae", test_metrics["MAE"])
+        mlflow.log_metric("test_rmse", test_metrics["RMSE"])
+        mlflow.log_metric("test_mape", test_metrics["MAPE"])
+
+        model_path = save_model(model, args.model_output)
+        metrics_path = save_metrics(all_metrics, args.metrics_output)
+
+        mlflow.log_artifact(str(metrics_path))
+        mlflow.lightgbm.log_model(model, artifact_path="model")
+
+        print(f"\nModel saved to   : {model_path}")
+        print(f"Metrics saved to : {metrics_path}")
+        print("Training completed successfully.")
 
 
 if __name__ == "__main__":
