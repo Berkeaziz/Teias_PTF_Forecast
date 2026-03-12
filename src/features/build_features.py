@@ -41,31 +41,24 @@ def load_data(input_path: str | Path) -> pd.DataFrame:
     return df
 
 
-def build_target(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    df["target"] = df["ptf"].shift(-24)
-    return df
-
 def base_table(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-
-    base = df[["ptf"]]
-
+    base = df[["ptf"]].copy()
     return base
+
 
 def add_time_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     df["hour"] = df.index.hour.astype("int8")
     df["day_of_week"] = df.index.dayofweek.astype("int8")
-
-    df["dow_sin"] = np.sin(2 * np.pi * df["day_of_week"] / 7)
-    df["dow_cos"] = np.cos(2 * np.pi * df["day_of_week"] / 7)
-
     df["is_weekend"] = (df["day_of_week"] >= 5).astype("int8")
 
     df["hour_sin"] = np.sin(2 * np.pi * df["hour"] / 24)
     df["hour_cos"] = np.cos(2 * np.pi * df["hour"] / 24)
+
+    df["dow_sin"] = np.sin(2 * np.pi * df["day_of_week"] / 7)
+    df["dow_cos"] = np.cos(2 * np.pi * df["day_of_week"] / 7)
 
     return df
 
@@ -84,7 +77,6 @@ def add_lag_features(df: pd.DataFrame) -> pd.DataFrame:
 def add_rolling_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
-    # leakage olmaması için önce shift
     past_ptf = df["ptf"].shift(1)
 
     df["rolling_mean_24"] = past_ptf.rolling(window=24).mean()
@@ -103,14 +95,30 @@ def add_diff_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def build_features(df: pd.DataFrame) -> pd.DataFrame:
+def build_target(df: pd.DataFrame, horizon: int = 24) -> pd.DataFrame:
     df = df.copy()
+    df["target"] = df["ptf"].shift(-horizon)
+    return df
+
+
+def build_features(
+    df: pd.DataFrame,
+    mode: str = "train",
+    horizon: int = 24,
+) -> pd.DataFrame:
     df = base_table(df)
+
     df = add_time_features(df)
     df = add_lag_features(df)
     df = add_rolling_features(df)
     df = add_diff_features(df)
-    df = build_target(df)
+
+    if mode == "train":
+        df = build_target(df, horizon=horizon)
+    elif mode == "inference":
+        pass
+    else:
+        raise ValueError("mode must be either 'train' or 'inference'")
 
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
@@ -118,11 +126,12 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def save_data(df: pd.DataFrame, output_path: str | Path) -> None:
+def save_data(df: pd.DataFrame, output_path: str | Path) -> Path:
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     df.to_parquet(output_path, engine="pyarrow", index=True)
+    return output_path
 
 
 def parse_args() -> argparse.Namespace:
@@ -140,6 +149,19 @@ def parse_args() -> argparse.Namespace:
         default="data/features/ptf_features.parquet",
         help="Path to output feature parquet file.",
     )
+    parser.add_argument(
+        "--mode",
+        type=str,
+        choices=["train", "inference"],
+        default="train",
+        help="Feature generation mode.",
+    )
+    parser.add_argument(
+        "--horizon",
+        type=int,
+        default=24,
+        help="Forecast horizon in hours. Used only in train mode.",
+    )
 
     return parser.parse_args()
 
@@ -147,17 +169,23 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
-    print("Loading data from:", args.input)
+    print(f"Loading data from: {args.input}")
     df = load_data(args.input)
-    print("Input shape:", df.shape)
+    print(f"Input shape: {df.shape}")
 
-    print("Building features...")
-    df_features = build_features(df)
-    print("Feature shape:", df_features.shape)
+    print(f"Building features in '{args.mode}' mode...")
+    df_features = build_features(
+        df=df,
+        mode=args.mode,
+        horizon=args.horizon,
+    )
+    print(f"Feature shape: {df_features.shape}")
+    print(f"Columns: {list(df_features.columns)}")
 
-    print("Saving features to:", args.output)
-    save_data(df_features, args.output)
+    print(f"Saving features to: {args.output}")
+    saved_path = save_data(df_features, args.output)
 
+    print(f"Features saved to: {saved_path}")
     print("Feature engineering completed successfully.")
 
 
