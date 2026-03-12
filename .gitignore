@@ -15,6 +15,7 @@ env/
 data/raw/*
 data/processed/*
 data/features/*
+data/predictions/*
 !data/.gitkeep
 models/*
 !models/.gitkeep
