@@ -10,7 +10,6 @@ build/
 .venv/
 venv/
 env/
-.env
 .ipynb_checkpoints/
 data/raw/*
 data/processed/*
@@ -29,3 +28,4 @@ airflow/airflow.db
 .idea/
 .DS_Store
 Thumbs.db
+*.env
