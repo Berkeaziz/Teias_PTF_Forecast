@@ -1,4 +1,4 @@
-# ⚡ Electricity Price Forecasting Pipeline (PTF)
+# Electricity Price Forecasting Pipeline (PTF)
 
 This project implements an **end-to-end machine learning pipeline** for forecasting the Turkish electricity market price (**PTF**) using data from the **EPİAŞ Transparency Platform**.
 
@@ -20,7 +20,7 @@ The pipeline uses:
 
 ---
 
-# 🏗 System Architecture
+# System Architecture
 
 The system is implemented as a **modular pipeline**, where each stage is an independent component.
 
@@ -70,7 +70,7 @@ class B,D,F process
 class H,I,J model
 class G,K,L inference
 ```
-## 📥 Data Ingestion
+## Data Ingestion
 
 Electricity price data is collected from the **EPİAŞ Transparency Platform API**.
 
@@ -95,7 +95,7 @@ This design allows the pipeline to run efficiently in **scheduled workflows**.
 
 ---
 
-## 🧹 Data Processing
+## Data Processing
 
 Raw API responses require cleaning before modeling.
 
@@ -113,7 +113,7 @@ The output is a **clean and structured time-series dataset** ready for feature e
 
 ---
 
-## 📊 Exploratory Data Analysis
+## Exploratory Data Analysis
 
 Initial analysis of the time series revealed several important patterns:
 
@@ -126,7 +126,7 @@ These observations guided the **feature engineering strategy and model design**.
 
 ---
 
-## ⚙ Feature Engineering
+## Feature Engineering
 
 Feature engineering is a **core component** of the pipeline.
 
@@ -159,7 +159,7 @@ The following feature groups are generated.
 
 ---
 
-## 🧠 Train Mode
+## Train Mode
 
 In **train mode**, the pipeline generates a target variable:
 
@@ -169,7 +169,7 @@ This allows the model to **predict the electricity price at the same hour on the
 
 ---
 
-## 🔮 Inference Mode
+## Inference Mode
 
 In **inference mode**:
 
@@ -178,7 +178,7 @@ In **inference mode**:
 
 This allows the same pipeline to be used for **real-time prediction**.
 
-## 📈 Baseline Model
+## Baseline Model
 
 A simple baseline model was implemented using the **lag-24 approach**.
 
@@ -195,7 +195,7 @@ Electricity markets often exhibit **strong daily repetition**, making this basel
 
 ---
 
-## 📉 SARIMA Model
+## SARIMA Model
 
 A classical statistical model was implemented for comparison.
 
@@ -214,7 +214,7 @@ The SARIMA model **did not outperform the lag-based baseline**.
 
 ---
 
-## 🤖 LightGBM Model
+## LightGBM Model
 
 A machine learning approach was implemented using **LightGBM**.
 
@@ -258,7 +258,7 @@ The dataset was split chronologically into:
 
 ---
 
-## 📊 Model Comparison
+## Model Comparison
 
 | Model | MAE | RMSE | MAPE |
 |------|------|------|------|
@@ -271,7 +271,7 @@ The **LightGBM model achieved the lowest MAE and RMSE**, indicating better predi
 The large **MAPE values** are caused by periods where **PTF approaches zero**, which makes percentage-based errors unstable.
 
 
-## 🔬 Experiment Tracking
+## Experiment Tracking
 
 The training pipeline integrates **MLflow** for experiment tracking.
 
@@ -290,7 +290,7 @@ This allows:
 
 ---
 
-## 🔄 Workflow Automation
+##  Workflow Automation
 
 The pipeline is orchestrated using **Apache Airflow**.
 
@@ -311,7 +311,7 @@ Two workflows were implemented:
   - loading the trained model
   - generating electricity price predictions
 
-  ## 🔁 Retraining Pipeline
+  ## Retraining Pipeline
 
 ```mermaid
 flowchart LR
@@ -340,7 +340,7 @@ class evaluate evaluation
 ```
 This workflow periodically retrains the forecasting model using newly available data.
 
-## 🔮 Inference Pipeline
+## Inference Pipeline
 
 ```mermaid
 flowchart LR
@@ -368,7 +368,7 @@ This workflow generates new price predictions using the latest data.
 
 Separating training and inference pipelines improves reliability and maintainability.
 
-## 🛠 Technologies Used
+## Technologies Used
 
 The project uses the following technologies and tools:
 
@@ -383,7 +383,7 @@ The project uses the following technologies and tools:
 
 ---
 
-## 🧠 Conclusion
+## Conclusion
 
 This project demonstrates the design of a **production-style machine learning pipeline** for electricity price forecasting.
 
